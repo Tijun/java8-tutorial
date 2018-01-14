@@ -1,4 +1,4 @@
-package com.tijun;
+package com.tijun.domain;
 
 public class Person {
 

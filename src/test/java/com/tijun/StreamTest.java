@@ -1,10 +1,14 @@
 package com.tijun;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+import com.tijun.domain.P;
+import com.tijun.domain.Person;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -67,6 +71,29 @@ public class StreamTest {
         people.stream()
                 .map(Person::getEmail) //映射 获取邮箱
                 .forEach(System.out::println);
+    }
+
+    /**
+     * flatMap
+     * 将类似于List<List<T>> stream---> List<T> stream
+     * 可以这样理解，我有很多个箱子，每箱子里面有很多玩具，
+     * flatMap就相当于把所有箱子里面的玩具全部取出然后做成一个玩具的流
+     */
+    @Test
+    public void flatMap(){
+        List<List<String>> lists = new ArrayList<>();
+        List<String> l1 = new ArrayList<>();
+        l1.add("aa");
+        l1.add("bb");
+        List<String> l2 = new ArrayList<>();
+        l2.add("cc");
+        l2.add("dd");
+        lists.add(l1);
+        lists.add(l2);
+        lists.stream()
+                .flatMap(strings -> strings.stream())
+                .forEach(System.out::println);
+        System.out.println("----------");
     }
 
     /**
@@ -140,14 +167,42 @@ public class StreamTest {
      */
     @Test
     public void reduce(){
-
+       int res = Arrays.asList(1,2,3,4).stream().reduce(0,(x,y)->x+y).intValue();
+       Assert.assertEquals(res,10);
 
     }
+
+    /**
+     * 去重
+     */
+    @Test
+    public void distinct(){
+        people = new ArrayList<>();
+        people.add(new Person("爱因斯坦",40,"iyst@163.com",2000));
+        people.add(new Person("达芬奇",98,"dfq@163.com",1500));
+        people.add(new Person("哈利波特",20,"hlbt@163.com",200));
+        people.add(new Person("牛顿",50,"nd@163.com",400));
+        people.add(new Person("牧云笙",20,"mys@163.com",1000));
+        people.add(new Person("爱因斯坦",40,"iyst@163.com",2000));
+        people.add(new Person("达芬奇",98,"dfq@163.com",1500));
+        people.add(new Person("哈利波特",20,"hlbt@163.com",200));
+        people.add(new Person("牛顿",50,"nd@163.com",400));
+        people.add(new Person("牧云笙",20,"mys@163.com",1000));
+        // 去重使用hashCode和equal方法，所以去重重复对象时要同时从写hashCode和equals方法
+        people.stream().distinct().collect(toList()).forEach(System.out::println);
+
+    }
+
+
     /**
      * 收集器
      */
     @Test
     public void collector(){
+        // Collectors 工具类提供了很多默认的实现，比如 toList,toMap,toSet
+        // 使用parallelStream时必须使用concurrent的相应实现类？？？
+        people.parallelStream().collect(toList());// 列表
+        people.stream().collect(toCollection(VirtualFlow.ArrayLinkedList::new)); //指定具体实现
 
     }
 
